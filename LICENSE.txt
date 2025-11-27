@@ -1,0 +1,7 @@
+Copyright (C) 2025 [Ivan Hoan]
+
+This project is created solely for academic coursework.
+All rights reserved.
+
+Unauthorized copying, use, modification, distribution, or commercialization
+of any part of this project is strictly prohibited.
