@@ -14,6 +14,12 @@ Gameplay involves navigating a labyrinthian environment: The player must strateg
 [NoCopyrightSounds Official Website](https://ncs.io/)
 
 
+[AYUDA: by MXRCVRY](https://ncs.io/AYUDA)
+
+[teamo: by c8o](https://ncs.io/teamo)
+
+[harinezumi: by waera](https://ncs.io/harinezumi)
+
 ### Image (Generate by Gemini: Nano Banana Pro)
 [Gemini Google](https://gemini.google.com)
 
