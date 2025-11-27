@@ -53,6 +53,7 @@ Dungeon::Dungeon() {
 
     // Add Dead Room to the vector
     deadRooms.push_back(t111);
+    deadRooms.push_back(t33);
 
     winRoom = t321;
 
