@@ -21,6 +21,8 @@ private:
 
 	RenderWindow window;
 	
+
+	// Font
 	Font fontSemiBoldItalic;
 	Font fontSemiBold;
 	Font fontRegular;
@@ -56,6 +58,7 @@ private:
 	Texture start; // Start Image
 	Texture bad; // Bad ending Image
 	Texture good; // Good ending Image
+	Texture dead; // Dead Image
 
 	int volume = game.GetGameSettingInt("volume"); // Default volume
 
@@ -83,14 +86,14 @@ private:
 	void Update(float deltaTime);
 
 	void HomePage();
-	void StoryPage();
+	void StoryPage(int index);
 	void GamePage();
 	void SettingPage();
 	void QuitPage();
 
 public:
 	static string lastKeyPressed;
-	static bool keyHeld[sf::Keyboard::ScancodeCount];
+	static bool keyHeld[Keyboard::ScancodeCount];
 
 	void ProcessEvents();
 

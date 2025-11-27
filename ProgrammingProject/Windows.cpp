@@ -84,6 +84,9 @@ void Windows::LoadImage() {
     if ( !good.loadFromFile("good.png") ) {
         cout << "Failed to load good.png" << endl;
 	}
+    if ( !dead.loadFromFile("dead.png") ) {
+        cout << "Failed to load dead.png" << endl;
+	}
 }
 
 Text Windows::SetText(const string & content, int size, const Color & color, const Font & font, float x, float y){
@@ -123,8 +126,9 @@ Text Windows::DrawPlayer() {
         30, 
         Color::White, 
         fontRegular, 
-        game.GetPlayerPosX(),
-        game.GetPlayerPosY());
+        game.GetPlayerRef().getPositionX(),
+        game.GetPlayerRef().getPositionY()
+    );
 
     return playerText;
 }
@@ -384,7 +388,6 @@ void Windows::Update(float deltaTime) {
     game.CheckBattle();
 }
 
-
 void Windows::HomePage() {
 	LoadMusic(1); // Load menu BGM
     int selected = 0;
@@ -433,11 +436,32 @@ void Windows::HomePage() {
     }
 }
 
-
-void Windows::StoryPage() {
+void Windows::StoryPage(int index) {
     LoadMusic(2); // Load intro BGM
-
+    
     Sprite sprite(start);
+
+    switch ( index ) {
+        case 1:
+        sprite.setTexture(start);
+        break;
+
+        case 2:
+        sprite.setTexture(bad);
+        break;
+
+        case 3:
+		sprite.setTexture(good);
+		break;
+
+		case 4:
+		sprite.setTexture(dead);
+        break;
+
+        default:
+        cout << "Invalid story index!" << endl;
+        return;
+    }
 
     // Get local bounds
     auto bounds = sprite.getLocalBounds();
@@ -464,12 +488,22 @@ void Windows::StoryPage() {
 
     Clock timer;
 
-    while ( window.isOpen() && status == 5 ) {
+    while ( window.isOpen() ) {
 
+        window.clear();
         ProcessEvents();
 
-        if ( lastKeyPressed == "Esc" || lastKeyPressed == "Space" ) {
+        // If it is the story of the start
+        if ( (lastKeyPressed == "Esc" || lastKeyPressed == "Space") && index == 1 ) {
             status = 2;
+            break;
+        }
+
+        if ( lastKeyPressed == "Esc" && !(index == 1) ) {
+            // Back to home page
+            status = 1;
+            // Reset the game
+            game.ResetGame();
             break;
         }
 
@@ -498,7 +532,6 @@ void Windows::StoryPage() {
     }
 }
 
-
 void Windows::GamePage() {
 	LoadMusic(3); // Load game BGM
     Text player = DrawPlayer();
@@ -507,6 +540,7 @@ void Windows::GamePage() {
 
     while ( window.isOpen() ) {
 
+        window.clear();
         ProcessEvents();
 
         float dt = clock.restart().asSeconds();
@@ -514,6 +548,23 @@ void Windows::GamePage() {
 
         if ( lastKeyPressed == "Esc" ) {
             status = 1;
+            return;
+        }
+
+        // If player hp drop to 0, the game ended.
+		// Handle in the game loop.
+        if ( game.GetPlayerRef().getHp() <= 0 ) {
+            status = 8;
+            return;
+		}
+
+        if ( game.GetDungeonRef().CheckPlayerDead() ) {
+            status = 6;
+            return;
+        }
+
+        if ( game.GetDungeonRef().CheckPlayerWin() ) {
+            status = 7;
             return;
         }
 
@@ -530,10 +581,6 @@ void Windows::GamePage() {
         game.CheckBattle();
         game.CheckDoor();
 
-        if ( game.GetPlayerHp() <= 0 ) {
-            break;
-        }
-
         // Draw UI
         window.clear(Color::Black);
 
@@ -546,12 +593,12 @@ void Windows::GamePage() {
         window.draw(player);
 
         // Player HP
-        RectangleShape hpBar = DrawHpBar(20.f, 30.f, game.GetPlayerHp(), game.GetPlayerMaxHp());
+        RectangleShape hpBar = DrawHpBar(20.f, 30.f, game.GetPlayerRef().getHp(), game.GetPlayerRef().getMaxHp());
         Text hpText = DrawHpText(
             20.f, 
             30.f, 
-            game.GetPlayerHp(), 
-            game.GetPlayerMaxHp(),
+            game.GetPlayerRef().getHp(),
+            game.GetPlayerRef().getMaxHp(),
             18,
             Color::White, 
             fontRegular);
@@ -585,11 +632,22 @@ void Windows::GamePage() {
         }
 
         // Draw Door
-        for ( int i = 0; i < game.GetCurrentRoomDoorCount(); i++ ) {
-            Text door = DrawDoor(i);
-            window.draw(door);
-        }
+        // If the Room is the root, then dont draw the back room
+        // else draw the back room
+        if (game.GetDungeonRef().IsAtRoot()) {
+            for ( int i = 1; i < game.GetDungeonRef().SubRoomSize() + 1; i++ ) {
+                Text door = DrawDoor(i);
+                window.draw(door);
+            }
 
+        } else {
+            // Draw Door
+            for ( int i = 0; i < game.GetDungeonRef().SubRoomSize() + 1; i++ ) {
+                Text door = DrawDoor(i);
+                window.draw(door);
+            }
+        }
+    
         window.display();
 	}
 }
@@ -629,12 +687,12 @@ void Windows::SettingPage() {
         if ( !editing ) {
 
             // Move selection up
-            if ( key == "W" || key == "Up" ) {
+            if ( (key == "W" || key == "Up") && selectedIndex > 0) {
                 selectedIndex = (selectedIndex - 1 + options.size()) % options.size();
             }
 
             // Move selection down
-            if ( key == "S" || key == "Down" ) {
+            if ( (key == "S" || key == "Down") && selectedIndex < options.size() - 1 ) {
                 selectedIndex = (selectedIndex + 1) % options.size();
             }
 
@@ -900,8 +958,13 @@ void Windows::run() {
             case 2: GamePage(); break;
             case 3: SettingPage(); break;
             case 4: QuitPage(); break;
-			case 5: StoryPage(); break;
+
+            // Story Page
+			case 5: StoryPage(1); break; // Story Start
+			case 6: StoryPage(2); break; // Player Drop
+            case 7: StoryPage(3); break; // Player Win
+			case 8: StoryPage(4); break; // Player Dead
+			default: window.close(); break;
         }
     }
-
 }

@@ -25,15 +25,6 @@ void Game::ResetGameSettings() {
     setting.save();
 }
 
-
-int Game::GetPlayerHp() {
-    return player.getHp();
-}
-
-int Game::GetPlayerMaxHp() {
-    return player.getMaxHp();
-}
-
 string Game::GetCurrentRoomName() {
     Room & room = dungeon.GetCurrentRoom();
     return room.getName();
@@ -42,10 +33,6 @@ string Game::GetCurrentRoomName() {
 int Game::GetCurrentRoomMonsterCount() {
     Room & room = dungeon.GetCurrentRoom();
 	return room.getMonsterCount();
-}
-
-int Game::GetCurrentRoomDoorCount() {
-    return dungeon.SubRoomSize();
 }
 
 string Game::GetCurrentRoomMonsterName(int index) {
@@ -138,7 +125,7 @@ void Game::CheckBattle() {
 
             // 3 sec countdown
             battleCooldown = true;
-            battleCooldownTimer = 3.0f;
+            battleCooldownTimer = 0.5f;
 
             return;
         }
@@ -148,24 +135,29 @@ void Game::CheckBattle() {
 void Game::CheckDoor() {
     float px = player.getPositionX();
     float py = player.getPositionY();
-    const float doorX = 1100.0f;
+    const float doorX1 = 1100.0f; // Next Door
+	const float doorX2 = 100.0f; // Previous Door
     const float doorY1 = 100.0f; // Door 0
-    const float doorY2 = 500.0f; // Door 1
-	const float doorY3 = 300.0f; // Door 2
+    const float doorY2 = 300.0f; // Door 1
+	const float doorY3 = 500.0f; // Door 2
 
     Room & previous = dungeon.GetCurrentRoom();
 
-    if ( Manhattan(px, py, doorX, doorY1) <= 50 ) {
+    if ( Manhattan(px, py, doorX1, doorY1) <= 50 ) {
         dungeon.MoveRoom(0);
         player.setPosition(50.f, 300.f); // Reset player position
 
-    } else if ( Manhattan(px, py, doorX, doorY2) <= 50 ) {
+    } else if ( Manhattan(px, py, doorX1, doorY2) <= 50 ) {
         dungeon.MoveRoom(1);
         player.setPosition(50.f, 300.f); // Reset player position
 
-    } else if ( Manhattan(px, py, doorX, doorY3) <= 50 ) {
+    } else if ( Manhattan(px, py, doorX1, doorY3) <= 50 ) {
         dungeon.MoveRoom(2);
         player.setPosition(50.f, 300.f); // Reset player position
+
+    } else if ( (Manhattan(px, py, doorX2, doorY1) <= 50) && !dungeon.IsAtRoot() ) {
+		dungeon.MoveParentRoom();
+		player.setPosition(1000.f, 300.f); // Reset player position
 
     } else {
         return;
@@ -181,14 +173,6 @@ float Game::Manhattan(float ax, float ay, float bx, float by) {
 
 float Game::Euclidean(float ax, float ay, float bx, float by) {
     return sqrt( (ax - bx) * (ax - bx) + (ay - by) * (ay - by) );
-}
-
-float Game::GetPlayerPosX() {
-	return player.getPositionX();
-}
-
-float Game::GetPlayerPosY() {
-	return player.getPositionY();
 }
 
 float Game::GetMonsterPosX(int index) {
@@ -252,15 +236,20 @@ float Game::GetItemPosY() {
 }
 
 float Game::GetDoorPosX(int index) {
-	return 1100.0f;
+    if ( index == 0 )
+		return 100.0f;
+    else
+	    return 1100.0f;
 }
 
 float Game::GetDoorPosY(int index) {
-    if (index == 0 )
+	if ( index == 0 )
+		return 100.0f;
+    else if (index == 1 )
         return 100.0f;
-	else if ( index == 1 )
+	else if ( index == 2 )
         return 500.0f;
-    else if ( index == 2 )
+    else if ( index == 3 )
 		return 300.0f;
 }
 
@@ -270,4 +259,18 @@ Player & Game::GetPlayerRef() {
 
 const Player & Game::GetPlayer() const {
 	return player;
+}
+
+Dungeon & Game::GetDungeonRef() {
+    return dungeon;
+}
+
+const Dungeon & Game::GetDungeon() const {
+    return dungeon;
+}
+
+void Game::ResetGame() {
+    player.ResetPlayer();
+    dungeon.ResetDungeon();
+    player.setPosition(20.f, 70.f);
 }

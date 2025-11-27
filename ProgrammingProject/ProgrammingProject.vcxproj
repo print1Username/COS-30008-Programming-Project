@@ -132,22 +132,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Dungeon.cpp" />
-    <ClCompile Include="Equipment.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Setting.cpp" />
-    <ClCompile Include="Weapon.cpp" />
     <ClCompile Include="Windows.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dungeon.h" />
-    <ClInclude Include="Equipment.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Item.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Monster.h" />
@@ -157,11 +152,12 @@
     <ClInclude Include="Room.h" />
     <ClInclude Include="Setting.h" />
     <ClInclude Include="Tree.h" />
-    <ClInclude Include="Weapon.h" />
     <ClInclude Include="Windows.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="bad.png" />
+    <Image Include="dead.png" />
+    <Image Include="good.png" />
     <Image Include="icon.png" />
     <Image Include="start.png" />
   </ItemGroup>
@@ -174,6 +170,7 @@
     <Font Include="Roboto\static\Roboto-ThinItalic.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\README.md" />
     <None Include="config.json" />
   </ItemGroup>
   <ItemGroup>

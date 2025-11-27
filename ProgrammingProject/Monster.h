@@ -16,7 +16,7 @@ private:
 		float y;
 	} pos;
 
-	const double speed = 0.35;
+	const double speed = 0.7;
 
 public:
 	Monster();

@@ -14,12 +14,13 @@ class Tree {
 private:
     T * key;                       // Pointer to the stored object
     Tree<T, N> * children[N];      // Child pointers
+    Tree<T, N> * parent;            // Parent pointers
 
     /**
      * @brief Private constructor for the NIL sentinel node.
      * NIL has no key and all children point to itself.
      */
-    Tree() : key(nullptr) {
+    Tree() : key(nullptr), parent(nullptr) {
         for ( int i = 0; i < N; i++ )
             children[i] = this;    // NIL children point to NIL
     }
@@ -31,7 +32,7 @@ public:
     /**
      * @brief Constructor storing a reference to an external object.
      */
-    Tree(T & obj) : key(&obj) {
+    Tree(T & obj) : key(&obj), parent(NIL) {
         for ( int i = 0; i < N; i++ )
             children[i] = NIL;     // Default children = NIL
     }
@@ -68,6 +69,14 @@ public:
             throw runtime_error("Cannot access key of NIL node.");
         return *key;
     }
+
+    Tree<T, N> * getParent() const {
+        if ( isEmpty() )
+            return nullptr;
+        return parent;
+    }
+
+
 
     /**
      * @brief Access child at index (reference return).
@@ -110,10 +119,16 @@ public:
         if ( index < 0 || index >= N )
             throw out_of_range("Index out of range.");
 
+        // Remove existing subtree
         if ( children[index] != NIL )
             delete children[index];
 
-        children[index] = (subtree == nullptr ? NIL : subtree);
+        if ( subtree == nullptr )
+            children[index] = NIL;
+        else {
+            children[index] = subtree;
+            subtree->parent = this;   // <-- Important
+        }
     }
 
     /**
@@ -128,6 +143,9 @@ public:
 
         Tree<T, N> * ret = children[index];
         children[index] = NIL;
+
+        if ( ret != NIL )
+            ret->parent = nullptr;
 
         return ret;
     }

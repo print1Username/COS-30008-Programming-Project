@@ -8,7 +8,6 @@ Room::Room() :
 Room::Room(string n) :
 	name(n), monsters() {
 	cout << "Room " << name << " created." << endl;
-
 }
 
 string Room::getName() {

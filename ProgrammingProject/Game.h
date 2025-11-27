@@ -40,13 +40,9 @@ public:
 	bool battleCooldown = false;
 	float battleCooldownTimer = 0.0f;
 
-	int GetPlayerHp();
-	int GetPlayerMaxHp();
-
 	// Getter Room
 	string GetCurrentRoomName();
 	int GetCurrentRoomMonsterCount();
-	int GetCurrentRoomDoorCount();
 
 	// Getter Monster
 	string GetCurrentRoomMonsterName(int index);
@@ -61,9 +57,6 @@ public:
 	// Taxicab geometry/Manhattan distance/Manhattan length
 	float Manhattan(float ax, float ay, float bx, float by);
 	float Euclidean(float ax, float ay, float bx, float by);
-
-	float GetPlayerPosX();
-	float GetPlayerPosY();
 
 	// Monster
 	float GetMonsterPosX(int index);
@@ -80,4 +73,9 @@ public:
 
 	Player & GetPlayerRef();
 	const Player & GetPlayer() const; // optional const accessor if needed elsewhere
+
+	Dungeon & GetDungeonRef();
+	const Dungeon & GetDungeon() const;
+
+	void ResetGame();
 };

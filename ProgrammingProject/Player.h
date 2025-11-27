@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "Equipment.h"
+#include <string>
 #include "List.h"
 using namespace std;
 
@@ -19,9 +19,7 @@ private:
 	const int maxhp;
 	const int maxequip = 10;
 
-	const double speed = 1.0;
-
-	List<Equipment> equip;
+	const double speed = 2.0;
 
 public:
 	Player(string n, int h, int d);
@@ -41,12 +39,9 @@ public:
 	void healing(int h);
 	void damaging(int h);
 
-	// List
-	void addEquipment(const Equipment & e);
-	void removeEquipment(int index);
-	void listEquipment();
-
 	string printPlayer();
 
 	friend ostream & operator<<(ostream & s, Player & p);
+
+	void ResetPlayer();
 };
